@@ -3,12 +3,12 @@ package com.example.inventory
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.inventory.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity() {
         adapter = ProductAdapter(this, productList)
         binding.listView.adapter = adapter
     }
+    override fun onRestart() {
+        super.onRestart()
+        recreate()
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -48,7 +52,6 @@ class MainActivity : AppCompatActivity() {
         })
 
         search.setOnCloseListener {
-            // Show the original list when search view is closed
             adapter?.updateProductList(getAllProducts())
             false
         }
@@ -102,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         val projection = arrayOf(dbManager.id, dbManager.image, dbManager.name, dbManager.description, dbManager.price)
         val selection = ""
         val selectionArgs = arrayOf<String>()
-        val orderBy = "Name" // Set your desired order by clause here if needed
+        val orderBy = "Name"
 
         val cursor = dbManager.getProducts(projection, selection, selectionArgs, orderBy)
         val productList: ArrayList<Product> = ArrayList()
