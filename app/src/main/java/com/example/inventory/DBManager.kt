@@ -1,5 +1,6 @@
 package com.example.inventory
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -41,6 +42,17 @@ class DBManager {
         query.tables = dbTable
         val cursor = query.query(sqlDB, projection, 	selection, selectionArgs, null, null, orderBy)
         return cursor
+    }
+    fun insertProduct(image: Int, name: String, description: String, price: String) {
+        val contentValues = ContentValues()
+        contentValues.put(this.image, image)
+        contentValues.put(this.name, name)
+        contentValues.put(this.description, description)
+        contentValues.put(this.price, price)
+
+        val result = sqlDB?.insert(dbTable, null, contentValues)
+
+
     }
 
 }
