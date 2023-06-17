@@ -33,15 +33,15 @@ class InsertActivity : AppCompatActivity() {
         val price = etPrice.text.toString().trim()
 
         if (name.isNotEmpty() && description.isNotEmpty() && price.isNotEmpty()) {
-            dbManager.insertProduct(0, name, description, price)
-            Toast.makeText(this, "Product added successfully", Toast.LENGTH_SHORT).show()
+            dbManager.insertProduct(R.drawable.apple, name, description, price)
+            Toast.makeText(this, "Producto añadido con éxito", Toast.LENGTH_SHORT).show()
 
             val resultIntent = Intent()
             resultIntent.putExtra("productAdded", true)
             setResult(Activity.RESULT_OK, resultIntent)
             finish()
         } else {
-            Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Por favor rellene todos los datos", Toast.LENGTH_SHORT).show()
         }
     }
 }

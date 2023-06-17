@@ -1,5 +1,12 @@
 package com.example.inventory
 
+// Integrantes
+// Hiram Daniel Díaz Ruiz
+// Leonel Iván Fernández Carrillo
+// Manuel González Martínez
+// Orlando Xavier López Guerrero
+// Sandra Jacqueline López Serna
+
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
@@ -105,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         val projection = arrayOf(dbManager.id, dbManager.image, dbManager.name, dbManager.description, dbManager.price)
         val selection = ""
         val selectionArgs = arrayOf<String>()
-        val orderBy = "Name"
+        val orderBy = "id"
 
         val cursor = dbManager.getProducts(projection, selection, selectionArgs, orderBy)
         val productList: ArrayList<Product> = ArrayList()
