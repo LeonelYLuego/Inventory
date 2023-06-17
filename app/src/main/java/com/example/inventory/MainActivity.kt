@@ -90,8 +90,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item!!.itemId) {
             R.id.add_menu -> {
-                // var intent = Intent(this, AddActivity::class.java)
-                // startActivity(intent)
+                val intent = Intent(this, InsertActivity::class.java)
+                startActivity(intent)
+                return true
             }
         }
         return super.onOptionsItemSelected(item)
