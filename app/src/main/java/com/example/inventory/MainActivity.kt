@@ -13,6 +13,7 @@ import com.example.inventory.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private var adapter: ProductAdapter? = null
+    private lateinit var dbManager: DBManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,12 +22,15 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val productList: ArrayList<Product> = ArrayList()
-        productList.add(Product(R.drawable.apple, "Manzana", "Fruta", "$ 123"))
+        dbManager = DBManager(this)
+
+        val productList: ArrayList<Product> = getAllProducts()
+        //productList.add(Product(R.drawable.apple, "Manzana", "Fruta", "$ 123"))
 
         adapter = ProductAdapter(this, productList)
         binding.listView.adapter = adapter
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
@@ -35,16 +39,53 @@ class MainActivity : AppCompatActivity() {
         search.setSearchableInfo(handler.getSearchableInfo(componentName))
         search.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Toast.makeText(applicationContext, query, Toast.LENGTH_LONG).show()
-                return false
+                searchProductsByName(query)
+                return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
         })
 
+        search.setOnCloseListener {
+            // Show the original list when search view is closed
+            adapter?.updateProductList(getAllProducts())
+            false
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
+
+    private fun searchProductsByName(query: String?) {
+        val productList: ArrayList<Product> = ArrayList()
+
+        if (!query.isNullOrEmpty()) {
+            val projection = arrayOf(dbManager.id, dbManager.image, dbManager.name, dbManager.description, dbManager.price)
+            val selection = "${dbManager.name} LIKE ?"
+            val selectionArgs = arrayOf("%$query%")
+            val orderBy = "Name"
+
+            val cursor = dbManager.getProducts(projection, selection, selectionArgs, orderBy)
+
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    val image = cursor.getInt(cursor.getColumnIndexOrThrow(dbManager.image))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.name))
+                    val description = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.description))
+                    val price = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.price))
+
+                    productList.add(Product(image, name, description, price))
+                }
+                cursor.close()
+                if (productList.isEmpty()) {
+                    Toast.makeText(this, "No se encontraron productos.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        adapter?.updateProductList(productList)
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item!!.itemId) {
@@ -55,4 +96,32 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun getAllProducts(): ArrayList<Product> {
+        val projection = arrayOf(dbManager.id, dbManager.image, dbManager.name, dbManager.description, dbManager.price)
+        val selection = ""
+        val selectionArgs = arrayOf<String>()
+        val orderBy = "Name" // Set your desired order by clause here if needed
+
+        val cursor = dbManager.getProducts(projection, selection, selectionArgs, orderBy)
+        val productList: ArrayList<Product> = ArrayList()
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                val image = cursor.getInt(cursor.getColumnIndexOrThrow(dbManager.image))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.name))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.description))
+                val price = cursor.getString(cursor.getColumnIndexOrThrow(dbManager.price))
+
+                productList.add(Product(image, name, description, price))
+            }
+            cursor.close()
+        }else{
+            Toast.makeText(this, "No se encontraron productos.", Toast.LENGTH_LONG).show()
+        }
+
+        return productList
+    }
+
+
 }
