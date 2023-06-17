@@ -42,4 +42,8 @@ class ProductAdapter(private val context: Context, var productList: ArrayList<Pr
 
         return view
     }
+    fun updateProductList(newProductList: ArrayList<Product>) {
+        productList = newProductList
+        notifyDataSetChanged()
+    }
 }
